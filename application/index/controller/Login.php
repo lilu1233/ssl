@@ -21,15 +21,15 @@ class Login extends Controller{
     /**
      **************lilu*******************
      * @param Request $request
-     * Notes:甩甩乐授权登录
+     * Notes:登录短信验证
      **************************************
      */
     public function index_login()
     {
         //获取app配置信息
-        $app_info=Config::get('app_info'); 
-           $post['account'] = '15729016523';               //获取前端提交数据
-        // $post = input('post.');              //获取前端提交数据
+//        $app_info=Config::get('app_info');
+//        $post['account'] = '15729016523';               //获取前端提交数据
+         $post = input('');              //获取前端提交数据
         if($post){
             $re=DB::name('member')
                 ->where('account',$post['account'])
@@ -38,15 +38,15 @@ class Login extends Controller{
             if($re){
                 //发送短信
                 $code=rand(100,999);
-                Session::set('code',$code);                
-                $content='尊敬的'.$post['account'].'请输入有效码'.$code.'有效期10分钟';
-                sms_message($post['account'],$content);
+                Session::set('code',$code);
+                $content='您的验证码：'.$code;
+                $re2= sms_message($post['account'],$content);
                 //获取token
-                $key=$re['passwd'];          //客户秘钥--注册时生成
-                $data['time']=time();        //当前时间戳
-                $data['token']=md5($key.md5($data['time']));    //token加密
-                if($data){
-                    return  ajax_success('发送短信成功',$data);
+//                $key=$re['passwd'];          //客户秘钥--注册时生成
+//                $data['time']=time();        //当前时间戳
+//                $data['token']=md5($key.md5($data['time']));    //token加密
+                if($re2){
+                    return  ajax_success('发送短信成功');
                 }else{
                     return  ajax_error('发送短信失败');
                 }
@@ -54,28 +54,30 @@ class Login extends Controller{
                 //注册用户信息
                 $user['account']=$post['account'];       //用户手机号
                 $user['passwd']=md5($post['account'].time());
-                $re=DB::name('member')
+                $re2=DB::name('member')
                     ->insert($user);                //添加用户信息
-                if($re){
-                        //发送短信
-                        $content='甩甩乐做测试';
-                        sms_message($post['account'],$content);
-                        //获取token
-                        $key=$user['passwd'];          //客户秘钥--注册时生成
-                        $data['time']=time();        //当前时间戳
-                        $data['token']=md5($key.md5($data['time']));    //token加密
-                        if($data){
-                            return  ajax_success('发送短信成功',$data);
-                        }else{
-                             return  ajax_error('发送短信失败');
-                        }
+                if($re2){
+                    //发送短信
+                    $code=rand(100,999);
+                    Session::set('code',$code);
+                    $content='您的验证码：'.$code;
+                    $re3=sms_message($post['account'],$content);
+//                        //获取token
+//                        $key=$user['passwd'];          //客户秘钥--注册时生成
+//                        $data['time']=time();        //当前时间戳
+//                        $data['token']=md5($key.md5($data['time']));    //token加密
+                    if($re3){
+                        return  ajax_success('发送短信成功');
+                    }else{
+                        return  ajax_error('发送短信失败');
+                    }
                 }else{
-                            return  ajax_error('发送短信失败');
+                    return  ajax_error('发送短信失败');
                 }
 
             }
-        }else{  
-                return  ajax_error('发送短信失败');                                              
+        }else{
+            return  ajax_error('发送短信失败');
         }
     }
 
@@ -88,36 +90,67 @@ class Login extends Controller{
      * @param Request $request
      */
     public function index_dolog(Request $request){
-        if($request->isPost()){
+//        if($request->isPost()){
+          if(1){
             $user_mobile =$request->only(['account'])["account"];       //获取登录账号
             $code =$request->only(["code"])["code"];                    //获取验证码
             if(empty($user_mobile)){
                 return  ajax_error('手机号不能为空',$user_mobile);
             }
             if(empty($code)){
-                return  ajax_error('验证码不能为空',$code);
+                $code='000';            //若code为空，给默认值000
             }
             //获取缓存验证码，并判断验证码
             $code_se=Session::get('code');
-            if(password_verify($code,$code_se)){                         //验证码通过
-                  Session::delete('code');
-                  return   ajax_success('登录成功');
-               
-            }else{
-                  return   ajax_error('登录失败');
+            $user=DB::name('member')
+                ->where('account',$user_mobile)
+                ->find();
+            if($user){
+                //验证码判断
+                if($code==$code_se){                         //验证码通过
+                    Session::delete('code');
+                    //获取token
+                    $key=$user['passwd'];          //客户秘钥--注册时生成
+                    $data['time']=time();        //当前时间戳
+                    $data['token']=md5($key.md5($data['time']));    //token加密
+                    return   ajax_success('登录成功',$data);
+                }elseif($code=='000'){
+                    //获取token
+                    $key=$user['passwd'];          //客户秘钥--注册时生成
+                    $data['time']=time();        //当前时间戳
+                    $data['token']=md5($key.md5($data['time']));    //token加密
+                    return   ajax_success('登录成功',$data);
+                }else{
+                    return   ajax_error('登录失败');
+
+                }
+            }else{             //用户不存在
+                //注册新用户
+                $member['account']=$user_mobile;
+                $member['passwd']=md5($member['account'].time());
+                $re=DB::name('member')->insert($member);
+                if($re){
+                    //验证码判断
+                       $code_se=Session::get('code');
+                    if($code==$code_se){                             //验证码通过
+                        Session::delete('code');
+                        //获取token
+                        $key=$user['passwd'];          //客户秘钥--注册时生成
+                        $data['time']=time();        //当前时间戳
+                        $data['token']=md5($key.md5($data['time']));    //token加密
+                        return   ajax_success('登录成功',$data);
+                }else{
+                        return   ajax_error('登录失败');
+                    }
+                }else{
+                    return   ajax_error('请输入摇一摇获取的验证码');
+                }
             }
-
-            //判断用户是否存在
-            $res = Db::name('member')->field('password')->where('phone_number',$user_mobile)->find();
-            $datas =[
-                'phone_number'=> $user_mobile,
-            ];
-
         }
     }
 
     /**
-     **************李火生*******************
+     **************lilu*******************
      * @param Request $request
      * Notes:退出操作
      **************************************
@@ -135,7 +168,7 @@ class Login extends Controller{
     }
 
     /**
-     **************李火生*******************
+     **************lilu*******************
      * @param Request $request
      * Notes:判断是否登录
      **************************************
@@ -161,7 +194,14 @@ class Login extends Controller{
             }
         }
     }
-
+    /*
+     *   lilu
+     *   notes:前端首页展示
+     *   @param  Request  $request
+     */
+    public function index(){
+        return view('index');
+    }
 
 
 

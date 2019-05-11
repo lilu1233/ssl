@@ -11,14 +11,18 @@
 use think\Route;
 
 /**
-*   [前端路由]
-**/
+ *   [前端路由]
+ **/
 Route::group("",[
 
-  /*登录*/
-  "index_login"=>"index/Login/index_login",       //前端登录
-  "index_dolog"=>"index/Login/index_dolog",       //前端登录处理
+    /*登录*/
+    "index"      =>"index/Index/index",             //前端登录页面
+    "index_login"=>"index/Login/index_login",       //前端登录--获取验证码
+    "index_dolog"=>"index/Login/index_dolog",       //前端登录处理
 
+
+   /*商品*/
+   "goods_info"=>"index/Goods/goods_info",                                //商品详细信息
 
 ]);
 
@@ -34,16 +38,17 @@ Route::group("admin",[
 
 
 
-    /*登录*/	
+    /*登录*/
     "index"=>"admin/Login/index",
     "login"=>"admin/Login/login",    //登录
+    "logout"=>"admin/Login/logout",  //退出登录
 
 
     /*验证码*/
     "login_captcha"=>"admin/Login/captchas",
 
 
-     /*管理员列表*/
+    /*管理员列表*/
     "admin_index"=>"admin/admin/index",
     "admin_add"=>"admin/admin/add",
     "admin_save"=>"admin/admin/save",
@@ -77,20 +82,29 @@ Route::group("admin",[
     "menu_status"=>"admin/menu/status",
 
     /*商品管理*/
-    "good_index"=>"admin/Goods/index",                //商品列表
-
+    "goods_index"=>"admin/Goods/goods_index",                //商品列表
+    "goods_add"   =>"admin/Goods/goods_add",                 //商品添加
+    "goods_edit"   =>"admin/Goods/goods_edit",               //商品编辑
+    "goods_search"   =>"admin/Goods/goods_search",           //商品检索
+    "goods_label_edit"   =>"admin/Goods/goods_label_edit",   //商品上下架设置
+    "goods_add_do"   =>"admin/Goods/goods_add_do",           //商品添加处理
+    "goods_edit_do"   =>"admin/Goods/goods_edit_do",           //商品编辑处理
+    "goods_del"   =>"admin/Goods/goods_del",           //商品编辑处理
 
 
     /*订单列表*/
-    "order_list"=>"admin/Order/order_list",
+    "order_list"=>"admin/Order/order_list",                   //订单列表
+    "order_search"=>"admin/Order/order_search",               //订单检索
+    "order_status"=>"admin/Order/order_status",               //订单检索
+    "order_del"=>"admin/Order/order_del",                     //订单删除
 
 
 
     /*策略管理*/
-    "free_tactics"=>"admin/tactics/free_tactics",          //面单策略
-    "bao_tactics"=>"admin/tactics/bao_tactics",            //红包策略
-    "zpoint_tactics"=>"admin/tactics/zpoint_tactics",      //增积分策略
-    "big_slam_tactics"=>"admin/tactics/big_slam_tactics",      //大满贯策略
+    "free_tactics"=>"admin/tactics/free_tactics",            //免单策略
+    "bao_tactics"=>"admin/tactics/bao_tactics",              //红包策略
+    "zpoint_tactics"=>"admin/tactics/zpoint_tactics",        //赠积分策略
+    "big_slam_tactics"=>"admin/tactics/big_slam_tactics",    //大满贯策略
     "new_man_tactics"=>"admin/tactics/new_man_tactics",      //新人帮甩策略
     "old_man_tactics"=>"admin/tactics/old_man_tactics",      //老人帮甩策略
 
@@ -99,7 +113,10 @@ Route::group("admin",[
     "answer_bank"=>"admin/Games/answer_bank",                //答题库
     "answer_bri"=>"admin/Games/answer_bri",                  //答题阶梯
     "differ"=>"admin/Games/differ",                          //找不同
+    "differ_add"=>"admin/Games/differ_add",                  //添加找不同
     "appear_pro"=>"admin/Games/appear_pro",                  //出现概率
+    "differ_index"=>"admin/Games/differ_index",              //出现概率
+    "update_images"=>"admin/Games/update_images",              //出现概率
 
 
 
@@ -119,7 +136,7 @@ Route::group("admin",[
     "capital"=>"admin/Capital/capital",                      //资金流水
 
 
-   
+
 
 
 

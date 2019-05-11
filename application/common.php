@@ -140,15 +140,18 @@ function _tree_vTree($arr,$pid=0){
 function ajax_error($msg = '服务器错误，可刷新页面重试',$data=array()){
     $return = array('status'=>'0');
     $return['info'] = $msg;
-    $return['data'] = $data;
-
+    if(!empty($data)){
+        $return['data'] = $data;
+    }
     exit(json_encode($return,JSON_UNESCAPED_UNICODE));
 }
 
 function ajax_success($msg = '提交成功',$data=array()){
     $return = array('status'=>'1');
     $return['info'] = $msg;
-    $return['data'] = $data;
+    if(!empty($data)){
+        $return['data'] = $data;
+    }
     exit(json_encode($return,JSON_UNESCAPED_UNICODE));
 }
 
@@ -704,29 +707,13 @@ function order_type_status($label){
  */
 function show_order_status($status){
     if($status==0){
-        echo '<button type="button" class="state color9" >已关闭</button>';
+        echo '<button type="button" class="state color9" >待确定订单</button>';
     }else if($status==1){
-        echo '<button type="button" class="state color1" >待支付</button>';
-//    }else if($status==2){
-//        echo '<button type="button" class="state  payment-has-been" >已付款</button>';
-    }else  if($status==2 || $status==3){
-        echo '<button type="button" class="state color2" >待发货</button>';
-//    }else  if($status==4){
-//        echo '<button type="button" class="state  shipmented-btu" >已发货</button>';
-    }else  if($status==4 || $status==5){
-        echo '<button type="button" class="state color3" >待收货</button>';
-    }else  if($status==6){
-        echo '<button type="button" class="state color3" >已收货</button>';
-    }else  if($status==7){
-        echo '<button type="button" class="state color3" >待评价</button>';
-    } else  if($status==8){
-        echo '<button type="button" class="state color4" >已完成</button>';
-//    }else  if($status==9){
-//        echo '<button type="button" class="state  cancel-btu" >取消订单</button>';
-    }else  if($status==9 || $status==10){
-        echo '<button type="button" class="state color5" >已关闭</button>';
-    }else  if($status==11){
-        echo '<button type="button" class="state color6" >退货</button>';
+        echo '<button type="button" class="state color1" >待发货</button>';
+    }else  if($status==2){
+        echo '<button type="button" class="state color2" >已收货</button>';
+    }else  {   //status==3
+        echo '<button type="button" class="state color3" >已完成</button>';
     }
 }
 
@@ -1131,4 +1118,19 @@ function pay_status($status){
         echo '已到账';
     }
 }
+
+/** 
+ *  lilu
+ *  随机生成6位数（数字,字母）
+ */
+ 
+ function randomkeys($length = 6) {
+     $returnStr='';
+     $pattern = '1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLOMNOPQRSTUVWXYZ';
+     for($i = 0; $i < $length; $i ++) {
+         $returnStr .= $pattern {mt_rand ( 0, 61 )}; //生成php随机数
+        }
+       return $returnStr;
+    }
+
 
